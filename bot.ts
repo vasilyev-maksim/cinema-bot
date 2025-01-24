@@ -1,4 +1,4 @@
-import { Bot } from "https://deno.land/x/grammy@v1.17.0/mod.ts";
+import { Bot } from "https://deno.land/x/grammy@v1.34.0/mod.ts";
 
 // Ваш токен, полученный от BotFather
 const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
