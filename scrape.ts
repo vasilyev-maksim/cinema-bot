@@ -21,7 +21,7 @@ export async function scrapePC(lang: Lang = 'az'): Promise<ScrapedCinema> {
   const $ = cheerio.load(html);
   const movies = $('div.movies[rel="today"] .normal .m-i-d-title').map((_, el) => $(el).text()).get().map(x => ({ title: x.trim() }));
   return {
-    cinema: 'Cinema Plus',
+    cinema: 'Park Cinema',
     movies,
   };
 }
