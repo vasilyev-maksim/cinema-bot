@@ -1,21 +1,20 @@
-// import "." from 'fs:';
-import * as cheerio from 'cheerio';
+import { Bot } from "https://deno.land/x/grammy@v1.34.0/mod.ts";
+import { scrape } from "./scrape.ts";
 
-// Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
-if (import.meta.main) {
-  await Deno.serve({ port: 3000 }, async () => {
-    const URL = 'https://cinemastercard.az/';
-    let resp;
-    try {
-      resp = await fetch(URL);
-    } catch (e) {
-      console.log('error: ', e);
-    }
-    const html = (await resp?.text()) ?? "";
-    const $ = cheerio.load(html);
-    const result = $('footer a').first().text();
-    return new Response(result, {
-      headers: { "Content-Type": "text/plain" },
-    });
-  });
-}
+// Ваш токен, полученный от BotFather
+const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
+
+// Команда /start
+bot.command("start", (ctx) => {
+  ctx.reply("Привет! Я ваш Telegram-бот на Deno!");
+});
+
+// Ответ на любое сообщение
+bot.on("message", async (ctx) => {
+  ctx.reply(await scrape());
+  ctx.reply(`Вы написали: ${ctx.message.text} 222`);
+});
+
+console.log("Бот запущен! Откройте его в Telegram.");
+// Запускаем бота
+bot.start();
