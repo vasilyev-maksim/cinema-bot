@@ -7,7 +7,7 @@ export async function scrapeCP(lang: Lang = 'az'): Promise<ScrapedCinema> {
   const resp = await fetch(URL);
   const html = (await resp?.text()) ?? "";
   const $ = cheerio.load(html);
-  const movies = $('div[data-cinema][data-lang] h2').map((_, el) => $(el).text()).get().map(x => ({ title: x }));
+  const movies = $('div[data-cinema][data-lang] h2').map((_, el) => $(el).text()).get().map(x => ({ title: x.trim() }));
   return {
     cinema: 'Cinema Plus',
     movies,
@@ -19,7 +19,7 @@ export async function scrapePC(lang: Lang = 'az'): Promise<ScrapedCinema> {
   const resp = await fetch(URL);
   const html = (await resp?.text()) ?? "";
   const $ = cheerio.load(html);
-  const movies = $('div.movies .m-i-d-title').map((_, el) => $(el).text()).get().map(x => ({ title: x }));
+  const movies = $('div.movies[rel="today"] .normal .m-i-d-title').map((_, el) => $(el).text()).get().map(x => ({ title: x.trim() }));
   return {
     cinema: 'Cinema Plus',
     movies,
