@@ -82,7 +82,7 @@ bot.on("message", (ctx) => {
 
     movies.forEach((movie) => {
       const message = `<b>${movie.title}</b> 
-${cinema}
+${movie.cinema}
 ${movie.attributes.map((x) => `${x.type}_${x.value}`).join(" | ")}`;
 
       trySendPic(
@@ -100,7 +100,6 @@ ${movie.attributes.map((x) => `${x.type}_${x.value}`).join(" | ")}`;
           detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
         ]],
       );
-      // `;
     });
   });
 });
