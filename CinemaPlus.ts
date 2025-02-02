@@ -1,9 +1,9 @@
-import { attr } from "cheerio";
 import { Cinema } from "./Cinema.ts";
-import { Lang } from "./models.ts";
+import { Attribute, Lang, RunPeriod } from "./models.ts";
 import { MovieDetails } from "./MovieDetails.ts";
-import { Attribute, MovieListItem } from "./MovieListItem.ts";
+import { MovieListItem } from "./MovieListItem.ts";
 import * as cheerio from "cheerio";
+import { parse } from "date-fns";
 
 export class CinemaPlus extends Cinema {
   private static BASE_URL = "https://cinemastercard.az";
@@ -21,6 +21,7 @@ export class CinemaPlus extends Cinema {
     const movies = movieBlocks
       .map((_, root) => {
         const detailsUrlPart = $(".movie_image a", root).attr("href") ?? "";
+        const originalLink = this.getMovieDetailsUrl(detailsUrlPart);
         const posterUrlPart = $(".movie_image img", root).attr("src") ?? "";
         const posterUrl = this.getPosterUrl(posterUrlPart);
         const title = $("h2", root).text();
@@ -36,6 +37,7 @@ export class CinemaPlus extends Cinema {
           posterUrl,
           cinema: this,
           attributes,
+          originalLink,
         });
       }).get();
     return movies;
@@ -44,8 +46,8 @@ export class CinemaPlus extends Cinema {
   public override async getMovieDetails(
     detailsUrlPart: string,
   ): Promise<MovieDetails> {
-    const url = this.getMovieDetailsUrl(detailsUrlPart);
-    const resp = await fetch(url);
+    const originalLink = this.getMovieDetailsUrl(detailsUrlPart);
+    const resp = await fetch(originalLink);
     const html = (await resp?.text()) ?? "";
     const $ = cheerio.load(html);
     const title = $(".sessions_table td a").first().text();
@@ -54,7 +56,7 @@ export class CinemaPlus extends Cinema {
     const posterUrl = this.getPosterUrl(posterUrlPart);
     const description = $(".desc_film p").first().text();
     const detailsItems = $(".movie_details li div.detail").get();
-    const runPeriod = $(detailsItems[1]).text().trim();
+    const runPeriod = this.parseRunPeriod($(detailsItems[1]).text().trim());
     const country = $(detailsItems[2]).text().trim();
     const director = $(detailsItems[3]).text().trim();
     const duration = $(detailsItems[5]).text().trim();
@@ -75,12 +77,20 @@ export class CinemaPlus extends Cinema {
       trailerUrl,
       cinema: this,
       attributes: [],
+      originalLink,
     });
     return details;
   }
 
+  protected parseRunPeriod(runPeriodRaw: string): RunPeriod {
+    const [start, end] = runPeriodRaw.split("-").map((x) =>
+      parse(x.trim(), "dd.MM.yyyy", new Date())
+    );
+    return { start, end };
+  }
+
   protected extractMovieAttributes(srcs: string[]): Attribute[] {
-    const attrs = [];
+    const attrs: Attribute[] = [];
 
     if (srcs.some((x) => x.includes("/az."))) {
       attrs.push({ type: "lang", value: "az" });

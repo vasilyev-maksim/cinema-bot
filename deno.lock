@@ -5,7 +5,8 @@
     "jsr:@std/dotenv@*": "0.225.3",
     "jsr:@std/internal@^1.0.5": "1.0.5",
     "npm:@types/node@*": "22.5.4",
-    "npm:cheerio@1": "1.0.0"
+    "npm:cheerio@1": "1.0.0",
+    "npm:date-fns@^4.1.0": "4.1.0"
   },
   "jsr": {
     "@std/assert@1.0.11": {
@@ -70,6 +71,9 @@
     },
     "css-what@6.1.0": {
       "integrity": "sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw=="
+    },
+    "date-fns@4.1.0": {
+      "integrity": "sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg=="
     },
     "dom-serializer@2.0.0": {
       "integrity": "sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==",
@@ -293,7 +297,8 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "npm:cheerio@1"
+      "npm:cheerio@1",
+      "npm:date-fns@^4.1.0"
     ]
   }
 }

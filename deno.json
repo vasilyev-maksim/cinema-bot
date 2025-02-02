@@ -8,6 +8,7 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "cheerio": "npm:cheerio@^1.0.0"
+    "cheerio": "npm:cheerio@^1.0.0",
+    "date-fns": "npm:date-fns@^4.1.0"
   }
 }

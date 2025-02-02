@@ -1,10 +1,11 @@
 import { Cinema } from "./Cinema.ts";
-import { Attribute, MovieListItem } from "./MovieListItem.ts";
+import { Attribute, RunPeriod } from "./models.ts";
+import { MovieListItem } from "./MovieListItem.ts";
 
 export class MovieDetails extends MovieListItem {
   public readonly description: string;
   public readonly country: string;
-  public readonly runPeriod: string;
+  public readonly runPeriod: RunPeriod;
   public readonly duration: string;
   public readonly genre: string;
   public readonly director: string;
@@ -18,7 +19,7 @@ export class MovieDetails extends MovieListItem {
     posterUrl: string;
     description: string;
     country: string;
-    runPeriod: string;
+    runPeriod: RunPeriod;
     duration: string;
     genre: string;
     director: string;
@@ -26,6 +27,7 @@ export class MovieDetails extends MovieListItem {
     trailerUrl: string;
     cinema: Cinema;
     attributes: Attribute[];
+    originalLink: string;
   }) {
     super(args);
     this.description = args.description;

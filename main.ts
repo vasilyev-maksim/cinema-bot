@@ -10,10 +10,12 @@ import { Cinema } from "./Cinema.ts";
 import { Storage } from "./Storage.ts";
 import { MovieListItem } from "./MovieListItem.ts";
 import { Config } from "./models.ts";
+import { MessageFormatter } from "./MessageFormatter.ts";
 
 // Ваш токен, полученный от BotFather
 const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
 const storage = new Storage();
+const formatter = new MessageFormatter();
 const lang = "ru";
 const cinemas = [
   // parkCinema,
@@ -21,7 +23,7 @@ const cinemas = [
 ];
 const detailsPrefix = "details:";
 const config: Config = {
-  showMovieListAsButtons: true,
+  showMovieListAsButtons: false,
 };
 
 function getCinemaById(cinemaId: Cinema["id"]): Cinema {
@@ -87,10 +89,7 @@ bot.on("message", (ctx) => {
       ctx.reply(cinema.toString(), { reply_markup: keyboard });
     } else {
       movies.forEach((movie) => {
-        const message = `<b>${movie.title}</b>
-${movie.cinema}
-${movie.attributes.map((x) => `${x.type}_${x.value}`).join(" | ")}
-`;
+        const message = formatter.getMoviePreview(movie);
 
         trySendPic(
           ctx,
@@ -123,20 +122,8 @@ bot.on("callback_query:data", async (ctx) => {
       detailsUrlPart,
       () => cinema.getMovieDetails(detailsUrlPart),
     );
+    const message = formatter.getMovieDetailsMessage(details);
 
-    const message = `<b>${details.title}</b> (${cinema})
-  
-${details.genre}
-${details.country}
-${details.director}
-${details.runPeriod}
-${details.duration}
-${details.ageRestriction}
-  
-<a href="${details.trailerUrl}" alt="trailer">🍿 Trailer</a>
-  
-${details.description}
-`;
     trySendPic(
       ctx,
       details.posterUrl,

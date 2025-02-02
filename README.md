@@ -1,8 +1,8 @@
 # TODOs:
 
 - ~~Create repo~~
-- Rename `getListScrape` to `getMoviesList` etc.
-- Implement `ParkCinema` class
+- ~~Rename `getListScrape` to `getMoviesList` etc.~~
+- Move message generation logic to MessageComposer
 - Attrs formatter
+- Implement `ParkCinema` class
 
-- [POSTPONED] Move message generation logic to MessageComposer

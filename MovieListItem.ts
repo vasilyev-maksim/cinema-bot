@@ -1,9 +1,5 @@
 import { Cinema } from "./Cinema.ts";
-
-export type Attribute = {
-  type: string;
-  value: string;
-};
+import { Attribute } from "./models.ts";
 
 export class MovieListItem {
   public readonly id: string;
@@ -12,6 +8,7 @@ export class MovieListItem {
   public readonly posterUrl: string;
   public readonly cinema: Cinema;
   public readonly attributes: Attribute[];
+  public readonly originalLink: string;
 
   public constructor(args: {
     id: string;
@@ -20,6 +17,7 @@ export class MovieListItem {
     posterUrl: string;
     cinema: Cinema;
     attributes: Attribute[];
+    originalLink: string;
   }) {
     this.id = args.id;
     this.detailsUrlPart = args.detailsUrlPart;
@@ -27,5 +25,6 @@ export class MovieListItem {
     this.posterUrl = args.posterUrl;
     this.cinema = args.cinema;
     this.attributes = args.attributes;
+    this.originalLink = args.originalLink;
   }
 }
