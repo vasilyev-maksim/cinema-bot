@@ -1,49 +1,32 @@
-import * as cheerio from 'cheerio';
+import { Lang } from "./models.ts";
+import { Cinema } from "./Cinema.ts";
+import { debugFormat } from "./utils.ts";
+// import { parkCinema } from "./ParkCinema.ts";
+import { cinemaPlus } from "./CinemaPlus.ts";
+import { MovieListItem } from "./MovieListItem.ts";
 
-type Lang = 'en' | 'ru' | 'az';
-
-export async function scrapeCP(lang: Lang = 'az'): Promise<ScrapedCinema> {
-  const URL = `https://cinemastercard.az/${lang}/`;
-  const resp = await fetch(URL);
-  const html = (await resp?.text()) ?? "";
-  const $ = cheerio.load(html);
-  const movies = $('div[data-cinema][data-lang] h2').map((_, el) => $(el).text()).get().map(x => ({ title: x.trim() }));
-  return {
-    cinema: 'Cinema Plus',
-    movies,
-  };
-}
-
-export async function scrapePC(lang: Lang = 'az'): Promise<ScrapedCinema> {
-  const URL = `https://parkcinema.az/?lang=${lang}`;
-  const resp = await fetch(URL);
-  const html = (await resp?.text()) ?? "";
-  const $ = cheerio.load(html);
-  const movies = $('div.movies[rel="today"] .normal .m-i-d-title').map((_, el) => $(el).text()).get().map(x => ({ title: x.trim() }));
-  return {
-    cinema: 'Park Cinema',
-    movies,
-  };
-}
-
-type ScrapedMovie = {
-  title: string;
+export type MoviesListScrape = {
+  cinema: Cinema;
+  movies: MovieListItem[];
 };
 
-type ScrapedCinema = {
-  cinema: string,
-  movies: ScrapedMovie[],
-};
-
-type ScrapeResult = ScrapedCinema[];
-
-export async function scrape(lang: Lang): Promise<ScrapeResult> {
+export async function scrape(lang: Lang): Promise<MoviesListScrape[]> {
   return [
-    await scrapeCP(lang),
-    await scrapePC(lang)
+    // {
+    //   cinema: parkCinema,
+    //   movies: await parkCinema.getMoviesList(lang),
+    // },
+    {
+      cinema: cinemaPlus,
+      movies: await cinemaPlus.getMoviesList(lang),
+    },
   ];
 }
 
-export function format(result: ScrapeResult) {
-  return result.map(x => x.cinema + ': \n\n' + x.movies.map(z => z.title).join('\n')).join('\n\n-------------\n\n');
+if (import.meta.main) {
+  const res = await scrape("ru");
+  res.forEach((x) => {
+    console.log(debugFormat(x));
+    console.log("\n-----------------\n");
+  });
 }
