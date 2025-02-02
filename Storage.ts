@@ -8,19 +8,19 @@ import { parkCinema } from "./ParkCinema.ts";
 type CinemaId = Cinema["id"];
 type MovieId = MovieListItem["id"];
 
-export class ScrapeStorage {
+export class Storage {
   private static readonly expirationPeriodInMS = 60 * 60 * 1000; // 1 hour
 
-  private listScrapes: Record<CinemaId, Cache<MovieListItem[]>> = {
+  private movieListItems: Record<CinemaId, Cache<MovieListItem[]>> = {
     [parkCinema.id]: new Cache<MovieListItem[]>(
-      ScrapeStorage.expirationPeriodInMS,
+      Storage.expirationPeriodInMS,
     ),
     [cinemaPlus.id]: new Cache<MovieListItem[]>(
-      ScrapeStorage.expirationPeriodInMS,
+      Storage.expirationPeriodInMS,
     ),
   };
 
-  private detailsScrapes: Record<
+  private movieDetails: Record<
     CinemaId,
     Record<MovieId, Cache<MovieDetails>>
   > = {
@@ -29,23 +29,23 @@ export class ScrapeStorage {
   };
 
   // considers `listScrapesLastUpdate` before calling fetcher
-  public getListScrape(
+  public getMoviesList(
     cinemaId: CinemaId,
     fetcher: () => Promise<MovieListItem[]>,
   ): Promise<MovieListItem[]> {
-    return this.listScrapes[cinemaId].getValue(fetcher);
+    return this.movieListItems[cinemaId].getValue(fetcher);
   }
 
-  public getDetailsScrape(
+  public getMovieDetails(
     cinemaId: CinemaId,
     movieId: MovieId,
     fetcher: () => Promise<MovieDetails>,
   ): Promise<MovieDetails> {
-    if (!this.detailsScrapes[cinemaId][movieId]) {
-      this.detailsScrapes[cinemaId][movieId] = new Cache(
-        ScrapeStorage.expirationPeriodInMS,
+    if (!this.movieDetails[cinemaId][movieId]) {
+      this.movieDetails[cinemaId][movieId] = new Cache(
+        Storage.expirationPeriodInMS,
       );
     }
-    return this.detailsScrapes[cinemaId][movieId].getValue(fetcher);
+    return this.movieDetails[cinemaId][movieId].getValue(fetcher);
   }
 }

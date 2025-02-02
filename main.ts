@@ -7,18 +7,22 @@ import {
 // import { parkCinema } from "./ParkCinema.ts";
 import { cinemaPlus } from "./CinemaPlus.ts";
 import { Cinema } from "./Cinema.ts";
-import { ScrapeStorage } from "./Storage.ts";
+import { Storage } from "./Storage.ts";
 import { MovieListItem } from "./MovieListItem.ts";
+import { Config } from "./models.ts";
 
 // Ваш токен, полученный от BotFather
 const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
-const storage = new ScrapeStorage();
+const storage = new Storage();
 const lang = "ru";
 const cinemas = [
   // parkCinema,
   cinemaPlus,
 ];
 const detailsPrefix = "details:";
+const config: Config = {
+  showMovieListAsButtons: true,
+};
 
 function getCinemaById(cinemaId: Cinema["id"]): Cinema {
   const found = cinemas.find((x) => x.id === cinemaId);
@@ -57,7 +61,7 @@ async function trySendPic(
 // Команда /start
 bot.command("start", (ctx) => {
   cinemas.forEach((cinema) => {
-    storage.getListScrape(cinema.id, () => cinema.getMoviesList(lang)); // warm up cache
+    storage.getMoviesList(cinema.id, () => cinema.getMoviesList(lang)); // warm up cache
   });
   ctx.reply("Привет! Я ваш Telegram-бот на Deno!");
 });
@@ -65,42 +69,46 @@ bot.command("start", (ctx) => {
 // Ответ на любое сообщение
 bot.on("message", (ctx) => {
   cinemas.forEach(async (cinema) => {
-    const movies = await storage.getListScrape(
+    const movies = await storage.getMoviesList(
       cinema.id,
       () => cinema.getMoviesList(lang),
     );
-    // const keyboard = new InlineKeyboard();
 
-    // movies.forEach((movie) =>
-    //   keyboard.text(
-    //     movie.title,
-    //     detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
-    //   ).row()
-    // );
+    if (config.showMovieListAsButtons) {
+      const keyboard = new InlineKeyboard();
 
-    // ctx.reply(cinema.toString(), { reply_markup: keyboard });
-
-    movies.forEach((movie) => {
-      const message = `<b>${movie.title}</b> 
-${movie.cinema}
-${movie.attributes.map((x) => `${x.type}_${x.value}`).join(" | ")}`;
-
-      trySendPic(
-        ctx,
-        movie.posterUrl,
-        message,
-        (err) => {
-          console.error(
-            "Failed to fetch poster for [" + movie.title + "] movie:\n",
-            err,
-          );
-        },
-        [[
-          "More info",
+      movies.forEach((movie) =>
+        keyboard.text(
+          movie.title,
           detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
-        ]],
+        ).row()
       );
-    });
+
+      ctx.reply(cinema.toString(), { reply_markup: keyboard });
+    } else {
+      movies.forEach((movie) => {
+        const message = `<b>${movie.title}</b>
+${movie.cinema}
+${movie.attributes.map((x) => `${x.type}_${x.value}`).join(" | ")}
+`;
+
+        trySendPic(
+          ctx,
+          movie.posterUrl,
+          message,
+          (err) => {
+            console.error(
+              "Failed to fetch poster for [" + movie.title + "] movie:\n",
+              err,
+            );
+          },
+          [[
+            "More info",
+            detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
+          ]],
+        );
+      });
+    }
   });
 });
 
@@ -110,7 +118,7 @@ bot.on("callback_query:data", async (ctx) => {
       .replace(detailsPrefix, "")
       .split("_");
     const cinema = getCinemaById(cinemaId);
-    const details = await storage.getDetailsScrape(
+    const details = await storage.getMovieDetails(
       cinemaId,
       detailsUrlPart,
       () => cinema.getMovieDetails(detailsUrlPart),
