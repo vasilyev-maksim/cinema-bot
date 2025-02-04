@@ -1,5 +1,5 @@
 import { Cinema } from "./Cinema.ts";
-import { Attribute, RunPeriod } from "./models.ts";
+import { Attribute, RunPeriod, Schedule } from "./models.ts";
 import { MovieListItem } from "./MovieListItem.ts";
 
 export class MovieDetails extends MovieListItem {
@@ -11,6 +11,8 @@ export class MovieDetails extends MovieListItem {
   public readonly director: string;
   public readonly ageRestriction: string;
   public readonly trailerUrl: string;
+  public readonly schedule: Schedule;
+  public readonly externalId: string;
 
   public constructor(args: {
     id: string;
@@ -28,6 +30,8 @@ export class MovieDetails extends MovieListItem {
     cinema: Cinema;
     attributes: Attribute[];
     originalLink: string;
+    schedule: Schedule;
+    externalId: string;
   }) {
     super(args);
     this.description = args.description;
@@ -38,5 +42,7 @@ export class MovieDetails extends MovieListItem {
     this.director = args.director;
     this.ageRestriction = args.ageRestriction;
     this.trailerUrl = args.trailerUrl;
+    this.schedule = args.schedule;
+    this.externalId = args.externalId;
   }
 }

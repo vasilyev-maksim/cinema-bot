@@ -8,7 +8,6 @@ import {
 import { cinemaPlus } from "./CinemaPlus.ts";
 import { Cinema } from "./Cinema.ts";
 import { Storage } from "./Storage.ts";
-import { MovieListItem } from "./MovieListItem.ts";
 import { Config } from "./models.ts";
 import { MessageFormatter } from "./MessageFormatter.ts";
 
@@ -23,7 +22,7 @@ const cinemas = [
 ];
 const detailsPrefix = "details:";
 const config: Config = {
-  showMovieListAsButtons: false,
+  showMovieListAsButtons: true,
 };
 
 function getCinemaById(cinemaId: Cinema["id"]): Cinema {
@@ -117,24 +116,25 @@ bot.on("callback_query:data", async (ctx) => {
       .replace(detailsPrefix, "")
       .split("_");
     const cinema = getCinemaById(cinemaId);
-    const details = await storage.getMovieDetails(
+    const movie = await storage.getMovieDetails(
       cinemaId,
       detailsUrlPart,
       () => cinema.getMovieDetails(detailsUrlPart),
     );
-    const message = formatter.getMovieDetailsMessage(details);
+    const message = formatter.getMovieDetailsMessage(movie);
 
     trySendPic(
       ctx,
-      details.posterUrl,
+      movie.posterUrl,
       message,
       (err) => {
         console.error(
-          "Failed to fetch poster for [" + details.title + "] movie:\n",
+          "Failed to fetch poster for [" + movie.title + "] movie:\n",
           err,
         );
       },
-      [["Рассписание", "schedule"]],
+      [["Schedule", detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart // "schedule"
+      ]],
     );
     await ctx.answerCallbackQuery(); // remove loading animation
   }

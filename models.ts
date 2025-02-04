@@ -23,3 +23,11 @@ export type RunPeriod = {
   start: Date;
   end: Date;
 };
+
+export type Schedule = {
+  date: Date;
+  theater: string;
+  hall: string;
+  attributes: Attribute[];
+  price: number;
+}[];
