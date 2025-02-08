@@ -9,10 +9,10 @@ export class MovieDetails extends MovieListItem {
   public readonly duration: string;
   public readonly genre: string;
   public readonly director: string;
-  public readonly ageRestriction: string;
   public readonly trailerUrl: string;
   public readonly schedule: Schedule;
   public readonly externalId: string;
+  public readonly availableScheduleDays: Date[];
 
   public constructor(args: {
     id: string;
@@ -32,6 +32,7 @@ export class MovieDetails extends MovieListItem {
     originalLink: string;
     schedule: Schedule;
     externalId: string;
+    availableScheduleDays: Date[];
   }) {
     super(args);
     this.description = args.description;
@@ -40,9 +41,9 @@ export class MovieDetails extends MovieListItem {
     this.duration = args.duration;
     this.genre = args.genre;
     this.director = args.director;
-    this.ageRestriction = args.ageRestriction;
     this.trailerUrl = args.trailerUrl;
     this.schedule = args.schedule;
     this.externalId = args.externalId;
+    this.availableScheduleDays = args.availableScheduleDays;
   }
 }

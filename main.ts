@@ -21,6 +21,7 @@ const cinemas = [
   cinemaPlus,
 ];
 const detailsPrefix = "details:";
+const schedulePrefix = "schedule:";
 const config: Config = {
   showMovieListAsButtons: true,
 };
@@ -52,7 +53,7 @@ async function trySendPic(
     );
   } catch (err) {
     onError(err);
-    ctx.reply(
+    await ctx.reply(
       message,
       { parse_mode: "HTML" },
     );
@@ -80,12 +81,12 @@ bot.on("message", (ctx) => {
 
       movies.forEach((movie) =>
         keyboard.text(
-          movie.title,
+          formatter.getMovieTitleForList(movie),
           detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
         ).row()
       );
 
-      ctx.reply(cinema.toString(), { reply_markup: keyboard });
+      await ctx.reply(cinema.toString(), { reply_markup: keyboard });
     } else {
       movies.forEach((movie) => {
         const message = formatter.getMoviePreview(movie);
@@ -102,7 +103,7 @@ bot.on("message", (ctx) => {
           },
           [[
             "More info",
-            detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart,
+            detailsPrefix + movie.cinema.id + "_" + movie.id,
           ]],
         );
       });
@@ -112,14 +113,14 @@ bot.on("message", (ctx) => {
 
 bot.on("callback_query:data", async (ctx) => {
   if (ctx.callbackQuery.data.startsWith(detailsPrefix)) {
-    const [cinemaId, detailsUrlPart] = ctx.callbackQuery.data
+    const [cinemaId, id] = ctx.callbackQuery.data
       .replace(detailsPrefix, "")
       .split("_");
     const cinema = getCinemaById(cinemaId);
     const movie = await storage.getMovieDetails(
       cinemaId,
-      detailsUrlPart,
-      () => cinema.getMovieDetails(detailsUrlPart),
+      id,
+      () => cinema.getMovieDetails(id),
     );
     const message = formatter.getMovieDetailsMessage(movie);
 
@@ -133,10 +134,22 @@ bot.on("callback_query:data", async (ctx) => {
           err,
         );
       },
-      [["Schedule", detailsPrefix + movie.cinema.id + "_" + movie.detailsUrlPart // "schedule"
-      ]],
+      [["Schedule", schedulePrefix + movie.cinema.id + "_" + movie.id]],
     );
     await ctx.answerCallbackQuery(); // remove loading animation
+  } else if (ctx.callbackQuery.data.startsWith(schedulePrefix)) {
+    const [cinemaId, id] = ctx.callbackQuery.data
+      .replace(schedulePrefix, "")
+      .split("_");
+    const cinema = getCinemaById(cinemaId);
+    const movie = await storage.getMovieDetails(
+      cinemaId,
+      id,
+      () => cinema.getMovieDetails(id),
+    );
+    const schedule = await cinema.getSchedule(lang, movie);
+    const message = formatter.getScheduleMessage(movie, schedule);
+    ctx.reply(message, { parse_mode: "HTML" });
   }
 });
 

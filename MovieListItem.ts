@@ -9,6 +9,7 @@ export class MovieListItem {
   public readonly cinema: Cinema;
   public readonly attributes: Attribute[];
   public readonly originalLink: string;
+  public readonly ageRestriction: string;
 
   public constructor(args: {
     id: string;
@@ -18,6 +19,7 @@ export class MovieListItem {
     cinema: Cinema;
     attributes: Attribute[];
     originalLink: string;
+    ageRestriction: string;
   }) {
     this.id = args.id;
     this.detailsUrlPart = args.detailsUrlPart;
@@ -26,5 +28,6 @@ export class MovieListItem {
     this.cinema = args.cinema;
     this.attributes = args.attributes;
     this.originalLink = args.originalLink;
+    this.ageRestriction = args.ageRestriction;
   }
 }
