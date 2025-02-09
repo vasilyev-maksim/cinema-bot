@@ -1,4 +1,5 @@
 export type Lang = "en" | "ru" | "az";
+export const LANGS: Lang[] = ["en", "ru", "az"];
 
 export type Config = {
   showMovieListAsButtons: boolean;
