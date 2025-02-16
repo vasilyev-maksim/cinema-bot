@@ -31,6 +31,7 @@ export class CinemaPlus extends Cinema {
         ).get();
         const attributes = this.parseMovieAttributes(attrImgs);
         const ageRestriction = $(".movie_class", root).text();
+        const isPresale = !!$(".presale", root);
 
         return new MovieListItem({
           id: detailsUrlPart,
@@ -41,6 +42,8 @@ export class CinemaPlus extends Cinema {
           attributes,
           originalLink,
           ageRestriction,
+          isPresale,
+          isUpcoming: false,
         });
       }).get();
     return movies;
@@ -112,6 +115,7 @@ export class CinemaPlus extends Cinema {
       en: "english",
       ru: "russian",
       az: "default",
+      tr: "turkish",
     }[lang];
     const formattedDate = format(date, "dd.MM.yyyy");
     const originalLink =

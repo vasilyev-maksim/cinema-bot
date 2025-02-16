@@ -10,6 +10,8 @@ export class MovieListItem {
   public readonly attributes: Attribute[];
   public readonly originalLink: string;
   public readonly ageRestriction: string;
+  public readonly isUpcoming: boolean;
+  public readonly isPresale: boolean;
 
   public constructor(args: {
     id: string;
@@ -20,6 +22,8 @@ export class MovieListItem {
     attributes: Attribute[];
     originalLink: string;
     ageRestriction: string;
+    isUpcoming: boolean;
+    isPresale: boolean;
   }) {
     this.id = args.id;
     this.detailsUrlPart = args.detailsUrlPart;
@@ -29,5 +33,7 @@ export class MovieListItem {
     this.attributes = args.attributes;
     this.originalLink = args.originalLink;
     this.ageRestriction = args.ageRestriction;
+    this.isUpcoming = args.isUpcoming;
+    this.isPresale = args.isPresale;
   }
 }
