@@ -123,6 +123,7 @@ await bot.api.setMyCommands([
 
 bot.on("callback_query:data", async (ctx) => {
   const query = ctx.callbackQuery.data;
+  
   if (query.startsWith(detailsPrefix)) {
     const [cinemaId, id] = query
       .replace(detailsPrefix, "")

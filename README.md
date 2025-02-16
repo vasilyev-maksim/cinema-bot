@@ -1,6 +1,5 @@
 # TODO:
 
-- Become aware of "Coming soon" (S)
 - Calculate "days left" correctly for coming soon movies (S)
 - Rethink onboarding flow (M)
 - texts according to lang setting (M)
@@ -15,6 +14,8 @@
   session suitable for all) (XL)
 
 # WIP:
+
+- Become aware of "Coming soon" and "Presale" (S)
 
 # DONE:
 

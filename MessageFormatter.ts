@@ -5,12 +5,17 @@ import { MovieListItem } from "./MovieListItem.ts";
 import { format, isSameDay } from "date-fns";
 import { getToday, getTomorrow } from "./utils.ts";
 
-// this class is responsible only for building some parts of messages,
+// this class is responsible for building some parts of messages,
 // not sending messages etc.
 export class MessageFormatter {
   public getMovieTitleForList(movie: MovieListItem): string {
-    return `${movie.title} (${movie.ageRestriction}) ${
-      this.formatLangAttrs(movie).join(" ")
+    return `${
+      this.wrapStr(
+        this.formatContentTypeAttrs(movie.attributes),
+        (x) => x + " ",
+      )
+    }${movie.title} | ${movie.ageRestriction} ${
+      this.formatAudioLangAttrs(movie.attributes)
     }`;
   }
 
@@ -19,61 +24,27 @@ export class MessageFormatter {
     return `<b>${movie.title}</b>
 
 ${movie.cinema}
-${movie.attributes.map((attr) => this.formatAttr(attr)).join(" | ")}
+${this.formatAllLangAttrsTogether(movie.attributes)} | ${
+      this.formatFormatAttrs(movie.attributes)
+    }
 `;
   }
 
-  public formatLangAttrs(movie: MovieListItem): string[] {
-    return movie.attributes.filter((x) => x.type === "lang").map((x) =>
-      this.formatAttr(x)
-    );
-  }
-
-  public formatAttr(attr: Attribute): string {
-    if (attr.type === "format") {
-      return attr.value;
-    }
-
-    if (attr.type === "lang") {
-      return this.getFlag(attr.value);
-      // return `${attr.value.toUpperCase()} ${flag}`;
-    }
-
-    if (attr.type === "subtitles") {
-      return "💬" + attr.value.toUpperCase();
-    }
-
-    return "";
-  }
-
-  public getFlag(value: "az" | "ru" | "tr" | "en") {
-    const flagsMap = {
-      az: "🇦🇿",
-      ru: "🇷🇺",
-      tr: "🇹🇷",
-      en: "🇬🇧",
-    };
-    return flagsMap[value];
-  }
-
-  // all movies as buttons list
   public getMovieDetailsMessage(movie: MovieDetails): string {
     const today = new Date();
     const daysLeft = differenceInDays(movie.runPeriod.end, today);
-    const formatAttrs = movie.attributes.filter((x) => x.type === "format").map(
-      (x) => this.formatAttr(x),
-    ).join(", ");
-    const langAttrs = this.formatLangAttrs(movie).join(" ");
-    const subtitlesAttr = movie.attributes.filter((x) => x.type === "subtitles")
-      .map((x) => this.formatAttr(x)).join(", ");
-    const attrs = "- " + langAttrs +
-      (subtitlesAttr ? " | " : "") +
-      subtitlesAttr + "\n- " + formatAttrs;
 
-    const message = `<b>${movie.title}</b> (${movie.ageRestriction})
+    const message = `${
+      this.wrapStr(
+        this.formatContentTypeAttrs(movie.attributes),
+        (x) => x + " ",
+      )
+    }<b>${movie.title}</b> (${movie.ageRestriction})
 ${movie.cinema}
 
-${attrs}
+- ${this.formatAllLangAttrsTogether(movie.attributes)} | ${
+      this.formatFormatAttrs(movie.attributes)
+    }
 - ${movie.genre}
 - ${movie.country}
 - ${movie.director}
@@ -87,9 +58,8 @@ ${
         ? `\n📋 Upcoming sessions:
 
 ${
-          movie.schedule.slice(0, 10).map((x) =>
-            `- ${this.formatScheduleItem(x)}`
-          ).join("\n")
+          movie.schedule.slice(0, 10)
+            .map((x) => `- ${this.formatScheduleItem(x)}`).join("\n")
         }\n${
           movie.schedule.length > 10
             ? "- ...for more use button below 👇\n"
@@ -105,7 +75,7 @@ ${movie.description}`;
     { date, theater, price, attributes }: Schedule[0],
   ): string {
     return `${format(date, "HH:mm")} - ${theater} - ${price} ₼ - ${
-      attributes.map((x) => this.formatAttr(x)).join(" ")
+      this.formatAllLangAttrsTogether(attributes)
     }`;
   }
 
@@ -128,5 +98,52 @@ ${movie.description}`;
           isToday ? "Today, " : isTomorrow ? "Tomorrow, " : ""
         }${weekday})\n\n${table}`;
       }).join("\n\n");
+  }
+
+  public getFlag(value: "az" | "ru" | "tr" | "en") {
+    const flagsMap = {
+      az: "🇦🇿",
+      ru: "🇷🇺",
+      tr: "🇹🇷",
+      en: "🇬🇧",
+    };
+    return flagsMap[value];
+  }
+
+  private formatAudioLangAttrs(attributes: Attribute[]): string {
+    return attributes.filter((x) => x.type === "lang")
+      .map(({ value }) => this.getFlag(value)).join("");
+  }
+
+  private formatFormatAttrs(attributes: Attribute[]): string {
+    return attributes.filter((x) => x.type === "format")
+      .map(({ value }) => value).join(", ");
+  }
+
+  private formatSubtitlesLangAttrs(attributes: Attribute[]): string {
+    const filtered = attributes.filter((x) => x.type === "subtitles");
+    return filtered.length > 0
+      ? "💬" + filtered.map(({ value }) => this.getFlag(value)).join("")
+      : "";
+  }
+
+  private formatAllLangAttrsTogether(attributes: Attribute[]): string {
+    return this.formatAudioLangAttrs(attributes) +
+      this.wrapStr(this.formatSubtitlesLangAttrs(attributes), (x) => ` (${x})`);
+  }
+
+  private formatContentTypeAttrs(attributes: Attribute[]): string {
+    return attributes.some((x) =>
+        x.type === "contentType" && x.value === "football"
+      )
+      ? "⚽️"
+      : "";
+  }
+
+  private wrapStr(
+    target: string | null | undefined,
+    templateFn: (target: string) => string,
+  ): string {
+    return target ? templateFn(target) : "";
   }
 }

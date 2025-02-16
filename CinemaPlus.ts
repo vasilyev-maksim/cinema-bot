@@ -204,6 +204,10 @@ export class CinemaPlus extends Cinema {
       attrs.push({ type: "subtitles", value: "az" });
     }
 
+    if (srcs.some((x) => x.includes("football"))) {
+      attrs.push({ type: "contentType", value: "football" });
+    }
+
     return attrs;
   }
 
