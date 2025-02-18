@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "run": "deno run --allow-net --allow-env --allow-import --unstable-kv",
+    "run": "deno run --allow-net --allow-env --allow-import --unstable-kv --allow-read",
     "scrape": "deno run run scrape.ts",
     "scrape:watch": "deno run run --watch scrape.ts",
     "dev": "deno run run main.ts",

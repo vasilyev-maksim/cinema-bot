@@ -11,6 +11,26 @@ import { Storage } from "./Storage.ts";
 import { Config, Lang, LANGS } from "./models.ts";
 import { MessageFormatter } from "./MessageFormatter.ts";
 import { Settings } from "./Settings.ts";
+import { serveDir } from "https://deno.land/std@0.224.0/http/file_server.ts";
+
+Deno.serve((req) => {
+  const url = new URL(req.url);
+
+  // Если корневой запрос ("/"), отдаем index.html вручную
+  if (url.pathname === "/") {
+    return fetch(new URL("public/index.html", import.meta.url))
+      .then((file) =>
+        file.ok ? file : new Response("404 Not Found", { status: 404 })
+      )
+      .catch(() => new Response("404 Not Found", { status: 404 }));
+  }
+
+  // Для всех остальных запросов раздаем файлы
+  return serveDir(req, {
+    fsRoot: "public",
+    enableCors: true,
+  });
+});
 
 // Ваш токен, полученный от BotFather
 const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
@@ -123,7 +143,7 @@ await bot.api.setMyCommands([
 
 bot.on("callback_query:data", async (ctx) => {
   const query = ctx.callbackQuery.data;
-  
+
   if (query.startsWith(detailsPrefix)) {
     const [cinemaId, id] = query
       .replace(detailsPrefix, "")
