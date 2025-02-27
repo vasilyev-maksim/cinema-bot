@@ -15,13 +15,12 @@
 
 # WIP:
 
-- Become aware of "Coming soon" and "Presale" (S)
-
 # DONE:
 
+- ~~Become aware of "Coming soon" and "Presale" (S)~~
 - ~~Create repo~~
 - ~~Rename `getListScrape` to `getMoviesList` etc.~~
-- ~~Move message generation logic to MessageFormatter~~
+- ~~Move message generation logic to  MessageFormatter~~
 - ~~Attrs formatter~~
 - ~~Schedule parsing~~
   - ~~Nearest instant~~
