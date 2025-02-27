@@ -1,6 +1,5 @@
 # TODO:
 
-- Calculate "days left" correctly for coming soon movies (S)
 - Rethink onboarding flow (M)
 - texts according to lang setting (M)
 - describe 3 or more user flows (M)
@@ -15,12 +14,15 @@
 
 # WIP:
 
+- Calculate "days left" correctly for coming soon movies (S)
+
 # DONE:
 
+- ~~Add testing capabilities to project~~
 - ~~Become aware of "Coming soon" and "Presale" (S)~~
 - ~~Create repo~~
 - ~~Rename `getListScrape` to `getMoviesList` etc.~~
-- ~~Move message generation logic to  MessageFormatter~~
+- ~~Move message generation logic to MessageFormatter~~
 - ~~Attrs formatter~~
 - ~~Schedule parsing~~
   - ~~Nearest instant~~

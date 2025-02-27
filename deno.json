@@ -4,7 +4,8 @@
     "scrape": "deno run run scrape.ts",
     "scrape:watch": "deno run run --watch scrape.ts",
     "dev": "deno run run main.ts",
-    "dev:watch": "deno run run --watch main.ts"
+    "dev:watch": "deno run run --watch main.ts",
+    "test": "deno test"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",

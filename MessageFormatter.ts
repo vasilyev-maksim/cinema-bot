@@ -31,9 +31,6 @@ ${this.formatAllLangAttrsTogether(movie.attributes)} | ${
   }
 
   public getMovieDetailsMessage(movie: MovieDetails): string {
-    const today = new Date();
-    const daysLeft = differenceInDays(movie.runPeriod.end, today);
-
     const message = `${
       this.wrapStr(
         this.formatContentTypeAttrs(movie.attributes),
@@ -50,7 +47,7 @@ ${movie.cinema}
 - ${movie.director}
 - ${movie.duration}
 - ${movie.ageRestriction}
-- ${movie.runPeriod.start.toLocaleDateString()} - ${movie.runPeriod.end.toLocaleDateString()} (${daysLeft} days left)
+- ${this.formatRunPeriod(movie)}
   
 <a href="${movie.trailerUrl}" alt="trailer">🍿 Trailer</a> | <a href="${movie.originalLink}" alt="movie original link">🔗 ${movie.cinema.name} link</a>
 ${
@@ -110,6 +107,25 @@ ${movie.description}`;
     return flagsMap[value];
   }
 
+  private formatRunPeriod(movie: MovieDetails): string {
+    const today = getToday();
+    const daysTillEnd = differenceInDays(movie.runPeriod.end, today);
+    const daysBeforeStart = differenceInDays(movie.runPeriod.start, today);
+    const daysRange =
+      `${movie.runPeriod.start.toLocaleDateString()} - ${movie.runPeriod.end.toLocaleDateString()}`;
+    const verbalDescription = daysBeforeStart > 0
+      ? `Starts in ${daysBeforeStart} days `
+      : daysTillEnd > 0
+      ? `${daysTillEnd} days left`
+      : "";
+
+    return this.wrapStr(
+      verbalDescription,
+      (x) => `${x} (${daysRange})`,
+      daysRange,
+    );
+  }
+
   private formatAudioLangAttrs(attributes: Attribute[]): string {
     return attributes.filter((x) => x.type === "lang")
       .map(({ value }) => this.getFlag(value)).join("");
@@ -143,7 +159,8 @@ ${movie.description}`;
   private wrapStr(
     target: string | null | undefined,
     templateFn: (target: string) => string,
+    fallback?: string,
   ): string {
-    return target ? templateFn(target) : "";
+    return target ? templateFn(target) : fallback ?? "";
   }
 }
