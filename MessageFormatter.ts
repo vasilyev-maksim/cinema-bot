@@ -2,12 +2,14 @@ import { differenceInDays } from "date-fns/differenceInDays";
 import { Attribute, Schedule } from "./models.ts";
 import { MovieDetails } from "./MovieDetails.ts";
 import { MovieListItem } from "./MovieListItem.ts";
-import { format, isSameDay } from "date-fns";
-import { getToday, getTomorrow } from "./utils.ts";
+import { differenceInHours, format, formatDate, isSameDay } from "date-fns";
+import { ITimeManager } from "./TimeManager.ts";
 
 // this class is responsible for building some parts of messages,
 // not sending messages etc.
 export class MessageFormatter {
+  public constructor(private readonly timeManager: ITimeManager) {}
+
   public getMovieTitleForList(movie: MovieListItem): string {
     return `${
       this.wrapStr(
@@ -80,8 +82,8 @@ ${movie.description}`;
     movie: MovieListItem,
     schedule: { date: Date; schedule: Schedule }[],
   ) {
-    const today = getToday();
-    const tomorrow = getTomorrow();
+    const today = this.timeManager.getToday();
+    const tomorrow = this.timeManager.getTomorrow();
 
     return `<b>${movie.title}</b>\n\n` +
       schedule.map(({ date, schedule }) => {
@@ -107,16 +109,17 @@ ${movie.description}`;
     return flagsMap[value];
   }
 
-  private formatRunPeriod(movie: MovieDetails): string {
-    const today = getToday();
-    const daysTillEnd = differenceInDays(movie.runPeriod.end, today);
-    const daysBeforeStart = differenceInDays(movie.runPeriod.start, today);
-    const daysRange =
-      `${movie.runPeriod.start.toLocaleDateString()} - ${movie.runPeriod.end.toLocaleDateString()}`;
-    const verbalDescription = daysBeforeStart > 0
-      ? `Starts in ${daysBeforeStart} days `
-      : daysTillEnd > 0
-      ? `${daysTillEnd} days left`
+  public formatRunPeriod(movie: Pick<MovieDetails, "runPeriod">): string {
+    const today = this.timeManager.getToday();
+    const hoursTillEnd = differenceInHours(movie.runPeriod.end, today);
+    const hoursBeforeStart = differenceInHours(movie.runPeriod.start, today);
+    const startStr = formatDate(movie.runPeriod.start, "d MMM yyyy");
+    const endStr = formatDate(movie.runPeriod.end, "d MMM yyyy");
+    const daysRange = `${startStr} - ${endStr}`;
+    const verbalDescription = hoursBeforeStart > 0
+      ? `Starts in ${Math.floor(hoursBeforeStart / 24)} days`
+      : hoursTillEnd > 0
+      ? `${Math.floor(hoursTillEnd / 24)} days left`
       : "";
 
     return this.wrapStr(

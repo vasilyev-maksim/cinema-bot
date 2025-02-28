@@ -11,11 +11,13 @@ import { Storage } from "./Storage.ts";
 import { Config, Lang, LANGS } from "./models.ts";
 import { MessageFormatter } from "./MessageFormatter.ts";
 import { Settings } from "./Settings.ts";
+import { TimeManager } from "./TimeManager.ts";
 
 // Ваш токен, полученный от BotFather
 const bot = new Bot("7717489452:AAELJ4zQkAGVA6NTTWVlOUzKaMnDcwb832w");
 const storage = new Storage();
-const formatter = new MessageFormatter();
+const timeManager = new TimeManager();
+const formatter = new MessageFormatter(timeManager);
 const cinemas = [
   // parkCinema,
   cinemaPlus,
@@ -123,7 +125,7 @@ await bot.api.setMyCommands([
 
 bot.on("callback_query:data", async (ctx) => {
   const query = ctx.callbackQuery.data;
-  
+
   if (query.startsWith(detailsPrefix)) {
     const [cinemaId, id] = query
       .replace(detailsPrefix, "")

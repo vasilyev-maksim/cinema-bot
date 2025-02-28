@@ -102,6 +102,8 @@ export class CinemaPlus extends Cinema {
       externalId,
       attributes,
       availableScheduleDays,
+      isPresale: false, // TODO
+      isUpcoming: false, // TODO
     });
     return details;
   }

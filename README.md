@@ -1,5 +1,6 @@
 # TODO:
 
+- 2 TODOS in `CinemaPlus.getMovieDetails` (S)
 - Rethink onboarding flow (M)
 - texts according to lang setting (M)
 - describe 3 or more user flows (M)
@@ -15,9 +16,11 @@
 # WIP:
 
 - Calculate "days left" correctly for coming soon movies (S)
+- Make tests for `MessageFormatter.formatRunPeriod` pass (skipped for now)
 
 # DONE:
 
+- ~~Write tests for `MessageFormatter.formatRunPeriod`~~
 - ~~Add testing capabilities to project~~
 - ~~Become aware of "Coming soon" and "Presale" (S)~~
 - ~~Create repo~~

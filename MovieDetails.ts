@@ -33,6 +33,8 @@ export class MovieDetails extends MovieListItem {
     schedule: Schedule;
     externalId: string;
     availableScheduleDays: Date[];
+    isUpcoming: boolean;
+    isPresale: boolean;
   }) {
     super(args);
     this.description = args.description;
